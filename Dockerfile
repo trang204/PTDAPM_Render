@@ -17,6 +17,9 @@ COPY . .
 # Cài thư viện Laravel
 RUN composer install --no-dev --optimize-autoloader
 
+# Tạo khóa ứng dụng Laravel
+RUN php artisan key:generate
+
 # Set quyền thư mục storage, bootstrap
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
