@@ -77,8 +77,15 @@ RUN php artisan key:generate
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Mở cổng 8000
-EXPOSE 8000
+# Cấu hình Apache để phục vụ Laravel
+COPY ./apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
-# CMD để khởi chạy Laravel server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Kích hoạt các module Apache cần thiết
+RUN a2enmod rewrite && \
+    service apache2 restart
+
+# Mở cổng 80 để Apache có thể lắng nghe
+EXPOSE 80
+
+# CMD để khởi động Apache
+CMD ["apache2-foreground"]
