@@ -17,7 +17,7 @@ COPY . .
 # Tạo file .env trong Docker container với nội dung phù hợp
 RUN echo "APP_NAME=Laravel" >> .env && \
     echo "APP_ENV=local" >> .env && \
-    echo "APP_KEY=" >> .env && \
+    echo "APP_KEY=base64:i3GvqPgwvCnwjU0/C+YwhYcqI5+TyemjekYWQyFQ1mE=" >> .env && \
     echo "APP_DEBUG=true" >> .env && \
     echo "APP_TIMEZONE=UTC" >> .env && \
     echo "APP_URL=http://localhost" >> .env && \
@@ -32,7 +32,7 @@ RUN echo "APP_NAME=Laravel" >> .env && \
     echo "LOG_DEPRECATIONS_CHANNEL=null" >> .env && \
     echo "LOG_LEVEL=debug" >> .env && \
     echo "DB_CONNECTION=mysql" >> .env && \
-    echo "DB_HOST=host.docker.internal" >> .env && \
+    echo "DB_HOST=127.0.0.1" >> .env && \
     echo "DB_PORT=3306" >> .env && \
     echo "DB_DATABASE=ptdapm" >> .env && \
     echo "DB_USERNAME=root" >> .env && \
@@ -59,33 +59,26 @@ RUN echo "APP_NAME=Laravel" >> .env && \
     echo "MAIL_PASSWORD=poggfjeajujvzqwr" >> .env && \
     echo "MAIL_ENCRYPTION=tls" >> .env && \
     echo "MAIL_FROM_ADDRESS=thanghavan2004@gmail.com" >> .env && \
-    echo "MAIL_FROM_NAME=\"Laravel\"" >> .env && \
+    echo "MAIL_FROM_NAME=\"${APP_NAME}\"" >> .env && \
     echo "AWS_ACCESS_KEY_ID=" >> .env && \
     echo "AWS_SECRET_ACCESS_KEY=" >> .env && \
     echo "AWS_DEFAULT_REGION=us-east-1" >> .env && \
     echo "AWS_BUCKET=" >> .env && \
     echo "AWS_USE_PATH_STYLE_ENDPOINT=false" >> .env && \
-    echo "VITE_APP_NAME=\"Laravel\"" >> .env
+    echo "VITE_APP_NAME=\"${APP_NAME}\"" >> .env
 
 # Cài thư viện Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Tạo khóa ứng dụng Laravel (nếu chưa có sẵn APP_KEY)
+# Tạo khóa ứng dụng Laravel
 RUN php artisan key:generate
 
 # Set quyền thư mục storage, bootstrap
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Cấu hình Apache để phục vụ Laravel
-COPY ./apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+# Expose port nếu cần
+EXPOSE 8000
 
-# Kích hoạt các module Apache cần thiết
-RUN a2enmod rewrite && \
-    service apache2 restart
-
-# Mở cổng 80 để Apache có thể lắng nghe
-EXPOSE 80
-
-# CMD để khởi động Apache
-CMD ["apache2-foreground"]
+# CMD chạy web server (có thể là nginx + php-fpm hoặc chỉ php artisan serve nếu đơn giản)
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
