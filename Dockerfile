@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.2-apache
 
 # Cài các extension Laravel cần
 RUN apt-get update && apt-get install -y \
