@@ -1,7 +1,9 @@
 services:
   - type: web
-    name: TluNews
+    name: tlu-news-web
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile
+    region: singapore      # bạn có thể thay bằng 'oregon' hoặc 'frankfurt'
     branch: main
+    autoDeploy: true
