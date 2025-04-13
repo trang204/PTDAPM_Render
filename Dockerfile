@@ -1,22 +1,28 @@
-# Sử dụng PHP 8.2 (hoặc PHP 8.4 nếu bạn tự build)
-FROM php:8.2-apache
+FROM php:8.1-fpm
 
-# Cài đặt các extension Laravel cần
+# Cài các extension Laravel cần
 RUN apt-get update && apt-get install -y \
-    libzip-dev zip unzip git curl \
-    && docker-php-ext-install pdo pdo_mysql zip
+    libpng-dev libonig-dev libxml2-dev zip unzip git curl \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
 
-# Enable mod_rewrite (bắt buộc cho Laravel routes)
-RUN a2enmod rewrite
+# Cài Composer
+COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
 
-# Đặt DocumentRoot thành thư mục /var/www/html/public
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-
-# Copy toàn bộ Laravel app vào container
-COPY . /var/www/html
-
-# Set quyền nếu cần (đảm bảo storage & bootstrap/cache ghi được)
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Làm Laravel hoạt động tốt trong container
+# Set thư mục làm việc
 WORKDIR /var/www/html
+
+# Copy source code
+COPY . .
+
+# Cài thư viện Laravel
+RUN composer install --no-dev --optimize-autoloader
+
+# Set quyền thư mục storage, bootstrap
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Expose port nếu cần
+EXPOSE 8000
+
+# CMD chạy web server (có thể là nginx + php-fpm hoặc chỉ php artisan serve nếu đơn giản)
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
