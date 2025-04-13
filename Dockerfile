@@ -11,83 +11,61 @@ COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
 # Set thư mục làm việc
 WORKDIR /var/www/html
 
-# Sao chép file .env nếu có
-APP_NAME=Laravel
-APP_ENV=local
-APP_KEY=base64:i3GvqPgwvCnwjU0/C+YwhYcqI5+TyemjekYWQyFQ1mE=
-APP_DEBUG=true
-APP_TIMEZONE=UTC
-APP_URL=http://localhost
+# Copy source code vào container
+COPY . .
 
-APP_LOCALE=vi
-APP_FALLBACK_LOCALE=en
-APP_FAKER_LOCALE=en_US
-
-APP_MAINTENANCE_DRIVER=file
-# APP_MAINTENANCE_STORE=database
-
-PHP_CLI_SERVER_WORKERS=4
-
-BCRYPT_ROUNDS=12
-
-LOG_CHANNEL=stack
-LOG_STACK=single
-LOG_DEPRECATIONS_CHANNEL=null
-LOG_LEVEL=debug
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=ptdapm
-DB_USERNAME=root
-DB_PASSWORD=
-
-SESSION_DRIVER=database
-SESSION_LIFETIME=120
-SESSION_ENCRYPT=false
-SESSION_PATH=/
-SESSION_DOMAIN=null
-
-BROADCAST_CONNECTION=log
-FILESYSTEM_DISK=local
-QUEUE_CONNECTION=database
-
-CACHE_STORE=database
-CACHE_PREFIX=
-
-MEMCACHED_HOST=127.0.0.1
-
-REDIS_CLIENT=phpredis
-REDIS_HOST=127.0.0.1
-REDIS_PASSWORD=null
-REDIS_PORT=6379
-
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=thanghavan2004@gmail.com
-MAIL_PASSWORD=poggfjeajujvzqwr
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=thanghavan2004@gmail.com
-MAIL_FROM_NAME="${APP_NAME}"
-
-# MAIL_MAILER=log
-# MAIL_SCHEME=null
-# MAIL_HOST=127.0.0.1
-# MAIL_PORT=2525
-# MAIL_USERNAME=null
-# MAIL_PASSWORD=null
-# MAIL_FROM_ADDRESS="hello@example.com"
-# MAIL_FROM_NAME="${APP_NAME}"
-
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_DEFAULT_REGION=us-east-1
-AWS_BUCKET=
-AWS_USE_PATH_STYLE_ENDPOINT=false
-
-VITE_APP_NAME="${APP_NAME}"
-
+# Tạo file .env trong Docker container với nội dung phù hợp
+RUN echo "APP_NAME=Laravel" >> .env && \
+    echo "APP_ENV=local" >> .env && \
+    echo "APP_KEY=base64:i3GvqPgwvCnwjU0/C+YwhYcqI5+TyemjekYWQyFQ1mE=" >> .env && \
+    echo "APP_DEBUG=true" >> .env && \
+    echo "APP_TIMEZONE=UTC" >> .env && \
+    echo "APP_URL=http://localhost" >> .env && \
+    echo "APP_LOCALE=vi" >> .env && \
+    echo "APP_FALLBACK_LOCALE=en" >> .env && \
+    echo "APP_FAKER_LOCALE=en_US" >> .env && \
+    echo "APP_MAINTENANCE_DRIVER=file" >> .env && \
+    echo "PHP_CLI_SERVER_WORKERS=4" >> .env && \
+    echo "BCRYPT_ROUNDS=12" >> .env && \
+    echo "LOG_CHANNEL=stack" >> .env && \
+    echo "LOG_STACK=single" >> .env && \
+    echo "LOG_DEPRECATIONS_CHANNEL=null" >> .env && \
+    echo "LOG_LEVEL=debug" >> .env && \
+    echo "DB_CONNECTION=mysql" >> .env && \
+    echo "DB_HOST=127.0.0.1" >> .env && \
+    echo "DB_PORT=3306" >> .env && \
+    echo "DB_DATABASE=ptdapm" >> .env && \
+    echo "DB_USERNAME=root" >> .env && \
+    echo "DB_PASSWORD=" >> .env && \
+    echo "SESSION_DRIVER=database" >> .env && \
+    echo "SESSION_LIFETIME=120" >> .env && \
+    echo "SESSION_ENCRYPT=false" >> .env && \
+    echo "SESSION_PATH=/" >> .env && \
+    echo "SESSION_DOMAIN=null" >> .env && \
+    echo "BROADCAST_CONNECTION=log" >> .env && \
+    echo "FILESYSTEM_DISK=local" >> .env && \
+    echo "QUEUE_CONNECTION=database" >> .env && \
+    echo "CACHE_STORE=database" >> .env && \
+    echo "CACHE_PREFIX=" >> .env && \
+    echo "MEMCACHED_HOST=127.0.0.1" >> .env && \
+    echo "REDIS_CLIENT=phpredis" >> .env && \
+    echo "REDIS_HOST=127.0.0.1" >> .env && \
+    echo "REDIS_PASSWORD=null" >> .env && \
+    echo "REDIS_PORT=6379" >> .env && \
+    echo "MAIL_MAILER=smtp" >> .env && \
+    echo "MAIL_HOST=smtp.gmail.com" >> .env && \
+    echo "MAIL_PORT=587" >> .env && \
+    echo "MAIL_USERNAME=thanghavan2004@gmail.com" >> .env && \
+    echo "MAIL_PASSWORD=poggfjeajujvzqwr" >> .env && \
+    echo "MAIL_ENCRYPTION=tls" >> .env && \
+    echo "MAIL_FROM_ADDRESS=thanghavan2004@gmail.com" >> .env && \
+    echo "MAIL_FROM_NAME=\"${APP_NAME}\"" >> .env && \
+    echo "AWS_ACCESS_KEY_ID=" >> .env && \
+    echo "AWS_SECRET_ACCESS_KEY=" >> .env && \
+    echo "AWS_DEFAULT_REGION=us-east-1" >> .env && \
+    echo "AWS_BUCKET=" >> .env && \
+    echo "AWS_USE_PATH_STYLE_ENDPOINT=false" >> .env && \
+    echo "VITE_APP_NAME=\"${APP_NAME}\"" >> .env
 
 # Cài thư viện Laravel
 RUN composer install --no-dev --optimize-autoloader
